@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta contentType="application/x-www-form-urlencoded">
+    <!-- bootstrap main js -->
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- fileinput main js -->
+    <link href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.3/css/fileinput.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.3/js/fileinput.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js "></script>
+    <!-- bootstrap theme -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>文件上传</title>
+</head>
+<body>
+<h1>文字识别<!--<p th:text="'我是文本输出'"></p>--></h1>
+<form enctype="multipart/form-data" id="ocr-form" action="/ocr" method="post">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <input type="file" name="file" id="file1" class="file">
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <h2>解析结果：</h2>
+        <span id="res"></span>
+    </div>
+</form>
+
+<script>
+    $("#file1").fileinput({
+        uploadUrl: 'http://localhost:8088/ocr', //你必须在这里设置一个有效的URL，否则你会得到一个错误
+        uploadAsync: true, //AJAX设置同步，异步的上传方式 （同步）
+        showUpload: true, //是否显示上传按钮
+        //browseClass: "btn btn-primary", //按钮样式
+        showRemove: true, //显示移除按钮
+        dropZoneEnabled: true,//是否显示拖拽区域
+        overwriteInitial: false,
+        maxFilesNum: 10,
+        maxFileCount: 4, //表示允许同时上传的最大文件个数
+        minFileCount: 0,	//最少文件
+        validateInitialCount: false,//异步上传返回结果处理
+        language: "zh",//配置语言
+        uploadLabel: "上传",//设置整体上传按钮的汉字
+        removeLabel: "移除",//设置整体删除按钮的汉字
+        uploadClass: "btn btn-primary",//设置上传按钮样式
+        showCaption: true,//是否显示标题
+        maxFileSize: 9999,//文件大小限制
+        enctype: 'multipart/form-data',
+        allowedFileExtensions: ["jpg", "png", "gif", "docx", "zip", "xlsx", "txt"],/*上传文件格式限制*/
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+        showBrowse: true,
+        browseOnZoneClick: true,
+    }).on('fileuploaded', function (event, data, previewId, index) {
+        // alert(JSON.stringify(data));
+        var res_arr = data.response.words_result;
+        for (var key in res_arr) {
+            console.log(res_arr[key].words);
+            $('#res').append(res_arr[key].words + "<br/>");
+        }
+        console.log(JSON.stringify(data));
+    });
+</script>
+</body>
+</html>
